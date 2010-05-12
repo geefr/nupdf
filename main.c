@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 {
 	if(argc==1)
 		{
-			fprintf(stderr, "argument 1 must be the pdf to open\n");
+			fprintf(stderr, "You must supply a filename to open\n");
 			return 1;
 		}
 		
