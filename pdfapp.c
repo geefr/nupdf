@@ -62,8 +62,7 @@ void pdfapp_open(pdfapp_t *app, char *filename)
 	{
 		int okay = pdf_authenticatepassword(app->xref, password);
 		while (!okay)
-		{
-			
+		{	
 			if (!password)
 				exit(1);
 			okay = pdf_authenticatepassword(app->xref, password);

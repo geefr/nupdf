@@ -12,6 +12,7 @@ struct pdfapp_s
 	char *filename;
 	char *doctitle;
 	pdf_xref *xref;
+	
 	/*pdf_outline *outline;*/
 	fz_renderer *rast;
 	int pagecount;
@@ -25,28 +26,8 @@ struct pdfapp_s
 	int pageno;
 	pdf_page *page;
 
-	/* snapback history */
-	/*int hist[256];
-	int histlen;*/
-
 	/* window system sizes */
 	int scrw, scrh;
-	/*int winw, winh;
-	int shrinkwrap;*/
-
-	/* event handling state */
-	/*char number[256];
-	int numberlen;
-
-	int ispanning;
-	int panx, pany;
-
-	int iscopying;
-	int selx, sely;
-	fz_irect selr;*/
-
-	/* client context storage */
-	/*void *userdata;*/
 };
 
 void pdfapp_init(pdfapp_t *app);
