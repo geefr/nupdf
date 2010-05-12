@@ -49,12 +49,14 @@ void reset_panning(void);
 #define NUPDF_NEXTPAGE SDLK_BACKSPACE
 #define NUPDF_PREVPAGE SDLK_TAB
 #define NUPDF_FINEPAN SDLK_LCTRL
+#define NUPDF_ROTATE SDLK_LSHIFT
 #else
 #define NUPDF_ZOOMIN SDLK_o
 #define NUPDF_ZOOMOUT SDLK_l
 #define NUPDF_NEXTPAGE SDLK_p
 #define NUPDF_PREVPAGE SDLK_i
 #define NUPDF_FINEPAN SDLK_a   /* maybe change later */
+#define NUPDF_ROTATE SDLK_q
 #endif
 
 pdfapp_t app;
@@ -274,6 +276,23 @@ int main_loop(void)
 					fprintf(stderr, "can't go beyond the first page idiot\n");
 				break;
 				
+				case NUPDF_ROTATE:
+					if(app.rotate==0)
+					{
+						SDL_BlitSurface(loading, NULL, screen, &desthourglass);
+						SDL_Flip(screen);
+						app.rotate=90;
+						draw_page(&app);
+					}
+					else if(app.rotate==90)
+					{
+						SDL_BlitSurface(loading, NULL, screen, &desthourglass);
+						SDL_Flip(screen);
+						app.rotate=0;
+						draw_page(&app);
+					}
+				break;
+				
 				case NUPDF_FINEPAN:
 					fine_pan[NUPDF_FINEPAN_ENABLE]=1;
 					break;
@@ -468,7 +487,8 @@ static void draw_page(pdfapp_t *app)
 	
 	matrix = fz_identity();
 	matrix = fz_concat(matrix, fz_translate(0, -app->page->mediabox.y1));
-	matrix = fz_concat(matrix, fz_scale(app->zoom, -app->zoom));
+	matrix = fz_concat(matrix, fz_scale(app->zoom, -app->zoom));		
+	matrix = fz_concat (matrix, fz_rotate (app->rotate));
 			
 	  irect  = fz_roundrect (fz_transformaabb (matrix, app->page->mediabox));
 	  pagewidth  = irect.x1 - irect.x0;
