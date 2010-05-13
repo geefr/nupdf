@@ -76,10 +76,10 @@ int fine_pan[5];
 int main(int argc, char** argv)
 {
 	if(argc==1)
-		{
-			fprintf(stderr, "You must supply a filename to open\n");
-			return 1;
-		}
+	{
+		fprintf(stderr, "You must supply a filename to open\n");
+		return 1;
+	}
 		
 	FILE *pdfile;
 	pdfile=fopen(argv[1], "r");
@@ -89,8 +89,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 	fclose(pdfile);
-		
-		
+
 		
 	init_graphics();
 	src.x=0;
@@ -122,7 +121,8 @@ int main(int argc, char** argv)
 	SDL_Surface *temp_bmp;
 		
 		temp_bmp = SDL_LoadBMP("data/loadingsmall.bmp");
-		if (temp_bmp == NULL) {
+		if (temp_bmp == NULL)
+		{
 			fprintf(stderr, "Unable to load bitmap: %s\n", SDL_GetError());
 			return 1;
 		}
@@ -133,15 +133,13 @@ int main(int argc, char** argv)
 	
 		SDL_FreeSurface(temp_bmp);
 	
-	
-	
 	main_loop();
 	
 	pdfapp_close(&app);
 	SDL_FreeSurface(image);
 	
 	SDL_Quit();
-	}
+}
 	
 int main_loop(void)
 {
@@ -168,10 +166,8 @@ int main_loop(void)
 					SDL_BlitSurface(loading, NULL, screen, &desthourglass);
 				    SDL_Flip(screen);
 					check_input=0;
-							oldzoom=app.zoom;
-							
-						
-					app.zoom+=0.25;
+						oldzoom=app.zoom;
+						app.zoom+=0.25;
 					if(app.zoom>2)
 						app.zoom=2;
 					else
@@ -410,16 +406,10 @@ void reset_panning(void)
 	
 int init_graphics(void)
 {
-	
-	fprintf(stderr, "starting sdl, here goes nothing\n");
-	
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 			fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 			return 1;
 		}
-	
-		fprintf(stderr, "initialising graphics with bpp=%i\n", BPP);
-	
 		screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, BPP,SDL_SWSURFACE);
 		if (screen == NULL) {
 			fprintf(stderr, "Unable to set video mode: %s\n", SDL_GetError());
@@ -443,8 +433,7 @@ int init_graphics(void)
 			return 1;
 	
 		SDL_FreeSurface(temp_bmp);
-		
-				
+						
 		if(SDL_BlitSurface(loading, NULL, screen, NULL)!=0)
 			fprintf(stderr, "loading screen blit failed\n");
 		SDL_Flip(screen);
