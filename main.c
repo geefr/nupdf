@@ -27,7 +27,6 @@
 #include "mupdf.h"
 #include "pdfapp.h"
 
-
 static void load_page(pdfapp_t *app);
 static void draw_page(pdfapp_t *app);
 int init_graphics(void);
@@ -36,6 +35,7 @@ void reset_panning(void);
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
+#define DEFAULT_ZOOM 0.555
 
 #ifdef DINGOO_BUILD
 #define BPP 16
@@ -94,8 +94,8 @@ int main(int argc, char** argv)
 	init_graphics();
 	src.x=0;
 	src.y=0;
-	src.w=320;
-	src.h=240;
+	src.w=SCREEN_WIDTH;
+	src.h=SCREEN_HEIGHT;
 	
 	dest.x=0;
 	dest.y=0;
@@ -105,9 +105,10 @@ int main(int argc, char** argv)
 	
 	pdfapp_init(&app);
 	
-	app.scrw=320;
-	app.scrh=240;
-	app.zoom=0.5;
+	app.scrw=SCREEN_WIDTH;
+	app.scrh=SCREEN_HEIGHT;
+	app.zoom=DEFAULT_ZOOM;
+	
 	app.pageno=1;
 	
 	pdfapp_open(&app, argv[1]);
@@ -120,18 +121,18 @@ int main(int argc, char** argv)
 	
 	SDL_Surface *temp_bmp;
 		
-		temp_bmp = SDL_LoadBMP("data/loadingsmall.bmp");
-		if (temp_bmp == NULL)
-		{
-			fprintf(stderr, "Unable to load bitmap: %s\n", SDL_GetError());
-			return 1;
-		}
-		
-		loading = SDL_DisplayFormat(temp_bmp);
-		if(loading==NULL)
-			return 1;
+	temp_bmp = SDL_LoadBMP("data/loadingsmall.bmp");
+	if (temp_bmp == NULL)
+	{
+		fprintf(stderr, "Unable to load bitmap: %s\n", SDL_GetError());
+		return 1;
+	}
 	
-		SDL_FreeSurface(temp_bmp);
+	loading = SDL_DisplayFormat(temp_bmp);
+	if(loading==NULL)
+		return 1;
+
+	SDL_FreeSurface(temp_bmp);
 	
 	main_loop();
 	
