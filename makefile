@@ -13,7 +13,7 @@ nanonote:
 	$(CC) $(SOURCES) $(CFLAGS) -o nupdf
 	$(STRIP) nupdf
 
-debug: dingoo_debug nanonote_debug
+debug: debug_dingoo debug_nanonote
 
 debug_dingoo:
 	$(CC) $(SOURCES) $(CFLAGS) -DDINGOO_BUILD -g -o nupdf.dge

@@ -32,6 +32,7 @@ static void draw_page(pdfapp_t *app);
 int init_graphics(void);
 int main_loop(void);
 void reset_panning(void);
+int init_config(void);
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -66,6 +67,7 @@ fz_obj obj;
 
 int check_input=1;
 int fine_pan[5];
+int topreturn=0;
 
 #define NUPDF_FINEPAN_ENABLE 0
 #define NUPDF_FINEPAN_UP 1
@@ -90,6 +92,10 @@ int main(int argc, char** argv)
 	}
 	fclose(pdfile);
 
+
+	if(init_config())
+		return 1;
+	
 		
 	init_graphics();
 	src.x=0;
@@ -214,6 +220,11 @@ int main_loop(void)
 							app.pageno=app.pagecount;
 						check_input=0;
 						reset_panning();
+						
+						/* topreturn code */
+						if(topreturn)
+							src.y=0;
+						
 						load_page(&app);
 						draw_page(&app);
 						SDL_PollEvent(&keyevent);
@@ -230,6 +241,11 @@ int main_loop(void)
 							app.pageno++;
 							check_input=0;
 							reset_panning();
+							
+							/* topreturn code */
+							if(topreturn)
+								src.y=0;
+							
 							load_page(&app);
 							draw_page(&app);
 						}
@@ -396,6 +412,55 @@ int main_loop(void)
 
 	}	
 	
+}
+	
+int init_config(void)
+{
+
+	/* check for config files existence */
+	FILE *conf;
+	char *confstring;
+	size_t bytesread;
+	int nbytes=128;
+	confstring = (char *) malloc (nbytes + 1);
+	int done=0;
+	int i=0;
+	
+	conf=fopen("config", "rw");
+	if(conf==NULL)
+	{
+		fprintf(stderr, "cannot find config file, quitting...\n");
+		return 1;
+	}
+	else /* parse the options */
+	{
+		while(!feof(conf))
+		{	
+			bytesread = getline (&confstring, &nbytes, conf);
+
+			confstring[((int)strlen(confstring))-2]='\0';
+			
+			fprintf(stderr, "confstring=%s\n", confstring);
+		
+			if(strcmp(confstring, "TOPRETURN")==0)
+			{
+				bytesread = getline (&confstring, &nbytes, conf);
+				confstring[((int)strlen(confstring))-2]='\0';
+				if(strcmp(confstring, "1")==0)
+				{
+					fprintf(stderr, "topreturn is 1\n");
+					topreturn=1;
+				}
+				else
+					topreturn=0;
+			}
+		
+		}
+			
+	}
+	
+	free(confstring);
+	return 0;
 }
 	
 void reset_panning(void)
