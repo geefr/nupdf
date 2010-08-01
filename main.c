@@ -33,6 +33,8 @@ int init_graphics(void);
 int main_loop(void);
 void reset_panning(void);
 int init_config(void);
+int menu_loop(void);
+
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -51,6 +53,7 @@ int init_config(void);
 #define NUPDF_PREVPAGE SDLK_TAB
 #define NUPDF_FINEPAN SDLK_LCTRL
 #define NUPDF_ROTATE SDLK_LSHIFT
+#define NUPDF_MENU SDLK_RETURN
 #else
 #define NUPDF_ZOOMIN SDLK_o
 #define NUPDF_ZOOMOUT SDLK_l
@@ -58,6 +61,7 @@ int init_config(void);
 #define NUPDF_PREVPAGE SDLK_i
 #define NUPDF_FINEPAN SDLK_a   /* maybe change later */
 #define NUPDF_ROTATE SDLK_q
+#define NUPDF_MENU SDLK_RETURN
 #endif
 
 pdfapp_t app;
@@ -325,9 +329,14 @@ int main_loop(void)
 					fine_pan[NUPDF_FINEPAN_RIGHT]=1;
 					
 					break;
+					
+				case NUPDF_MENU
+					menu_loop();
+					break;		
+					
 				case SDLK_ESCAPE:
 				  done=1;
-				  break;
+				  break;				  
 				default:
 				  break;
 			  }
@@ -411,6 +420,15 @@ int main_loop(void)
 		SDL_Flip(screen);
 
 	}	
+	
+}
+	
+int menu_loop(void)
+{
+	SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
+	
+	
+	
 	
 }
 	
