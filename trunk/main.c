@@ -500,7 +500,7 @@ int menu_loop(void)
 		sprintf(settingstext, "\t\t\tSettings\t%s\n\n"
 							  "Jump to page %i\t%s\n\n"
 							  "Return to top on pageturn: %s\t%s"
-							  "\nExit settings menu\t%s"
+							  "\nSave settings and return\t%s"
 							 , arrows[0], pagenumber, arrows[1], onoff, arrows[2], arrows[3]);
 
 		SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
@@ -521,11 +521,6 @@ int menu_loop(void)
 			case SDLK_DOWN:
 				if(arrowposition<3)
 					arrowposition++;
-				if(arrowposition==2)
-					if(topreturn)
-						topreturn=0;
-					else
-						topreturn=1;
 				break;
 			case SDLK_LEFT:
 				if(arrowposition==1)
@@ -541,6 +536,16 @@ int menu_loop(void)
 				if(arrowposition==1)
 					if(pagenumber<app.pagecount)
 						pagenumber++;
+				if(arrowposition==2)
+					if(topreturn)
+						topreturn=0;
+					else
+						topreturn=1;
+				break;
+			case SDLK_ESCAPE:
+			case SDLK_RETURN:
+				done=1;
+				
 				break;
 			case NUPDF_ZOOMIN:
 				if(arrowposition==1)
@@ -609,7 +614,7 @@ int init_config(void)
 
 			confstring[((int)strlen(confstring))-2]='\0';
 			
-			fprintf(stderr, "confstring=%s\n", confstring);
+			/*fprintf(stderr, "confstring=%s\n", confstring);*/
 		
 			if(strcmp(confstring, "TOPRETURN")==0)
 			{
@@ -617,7 +622,7 @@ int init_config(void)
 				confstring[((int)strlen(confstring))-2]='\0';
 				if(strcmp(confstring, "1")==0)
 				{
-					fprintf(stderr, "topreturn is 1\n");
+					/*fprintf(stderr, "topreturn is 1\n");*/
 					topreturn=1;
 				}
 				else
@@ -629,6 +634,7 @@ int init_config(void)
 	}
 	
 	free(confstring);
+	fclose(conf);
 	return 0;
 }
 
@@ -650,27 +656,27 @@ int save_config(void)
 	}	
 	else
 	{
-		while(!feof(conf))
+		while(!done)
 		{	
 			bytesread = getline (&confstring, &nbytes, conf);
-
-			confstring[((int)strlen(confstring))-1]='\0';
-			
+			confstring[((int)strlen(confstring))-2]='\0';
+		
 			fprintf(stderr, "confstring=%s\n", confstring);
+			fprintf(stderr, "strcmp returns %i\n", strcmp(confstring, "TOPRETURN"));
 		
 			if(strcmp(confstring, "TOPRETURN")==0)
 			{
-				
+				fprintf(stderr, "topreturn found, saving value\n");
+				fprintf(conf, "%i", topreturn);
 			}
-		
+			done=1;
+				
 		}
-		
-		
-		
-		
-		
+	
 	}
 	
+	free(confstring);
+	fclose(conf);
 	
 }	
 void reset_panning(void)
