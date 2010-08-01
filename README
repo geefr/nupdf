@@ -2,6 +2,7 @@
 
 nupdf is a small, relatively fast pdf reader for the dingoo-a320/a330(running dingux), ben nanonote, and in theory any other system (assuming the libraries can be compiled of course, minor changes may be needed).
 It uses the open source mupdf library to handle all pdf operations, and SDL to display/for the UI.
+nupdf also uses SDL_picofont for the menutext
 
 ==keybindings==
 =nanonote=
@@ -10,18 +11,22 @@ zoom in:o
 zoom out:l
 previous page:i
 next page:p
+toggle page rotation:q
 fine panning:a+dpad
 forward/back 5 pages:a+p/i
+menu:enter (right/left/o/l to increase/decrease page number, a to select)
 exit:escape
 
 =dingoo-a320=
 pan: up/down/left/right
 previous page:left shoulder
 next page:right shoulder
+toggle page rotation:y
 zoom in:x
 zoom out:b
 fine panning:a+dpad
 forward/back 5 pages:a+shoulder buttons
+menu:start (right/left/x/b to increase/decrease page number, a to select)
 exit:select
 
 ==Installation==
@@ -32,10 +37,20 @@ place nupdf.dge, and the data folder on the sd card (e.g /local/nupdf), and laun
 place nupdf, and the data folder onto the filesystem(doesn't really matter where), and type:
 ./nupdf foo.pdf
 
+==Changelog==
+=v0.3=
+v0.3 changelog:
+added page rotation
+added goto specific page
+added config file
+added return to top of page on pagechange
+starting zoom level tweaked
+
+
 ==Links==
 http://en.qi-hardware.com/wiki/Nupdf  -qi-hardware wiki page
 http://ccxvii.net/mupdf/  -homepage for the mupdf library
-
+http://hultinedutainment.se/~noname/?section=sdl_picofont -SDL_picofont page
 
 ==contact for bug reports/suggestions==
 submit any bugs to the wiki page, or otherwise contact me about them.
