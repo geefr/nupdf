@@ -1,6 +1,6 @@
 ===README--please read this file from start to finish, before asking any questions about the program===
 
-nupdf is a small, relatively fast pdf reader for the dingoo-a320(running dingux), ben nanonote, and in theory any other system (assuming the libraries can be compiled of course, minor changes may be needed).
+nupdf is a small, relatively fast pdf reader for the dingoo-a320/a330(running dingux), ben nanonote, and in theory any other system (assuming the libraries can be compiled of course, minor changes may be needed).
 It uses the open source mupdf library to handle all pdf operations, and SDL to display/for the UI.
 
 ==keybindings==

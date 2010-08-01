@@ -26,6 +26,7 @@
 #include "fitz.h"
 #include "mupdf.h"
 #include "pdfapp.h"
+#include "SDL_picofont.h"
 
 static void load_page(pdfapp_t *app);
 static void draw_page(pdfapp_t *app);
@@ -33,6 +34,7 @@ int init_graphics(void);
 int main_loop(void);
 void reset_panning(void);
 int init_config(void);
+int save_config(void);
 int menu_loop(void);
 
 
@@ -330,7 +332,7 @@ int main_loop(void)
 					
 					break;
 					
-				case NUPDF_MENU
+				case NUPDF_MENU:
 					menu_loop();
 					break;		
 					
@@ -425,10 +427,159 @@ int main_loop(void)
 	
 int menu_loop(void)
 {
-	SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
+	SDL_Event keyevent;
+	SDL_Surface *text;
+	SDL_Color textcolor={255, 255, 255};
+	char settingstext[1500];
+	char arrows[5][5];
+	char onoff[5];
+	int arrowposition=1;
+	int i=0;
+	int done=0;
+	int pagenumber=app.pageno;
+	
+	while(!done)
+	{
+		if(topreturn)
+			sprintf(onoff, "ON");
+		else
+			sprintf(onoff, "OFF");
+		
+		switch(arrowposition)
+		{
+			case 0:
+				sprintf(arrows[0], "<<<");
+				sprintf(arrows[1], "");
+				sprintf(arrows[2], "");
+				sprintf(arrows[3], "");
+				sprintf(arrows[4], "");
+				sprintf(arrows[5], "");
+				break;
+			case 1:
+				sprintf(arrows[0], "");
+				sprintf(arrows[1], "<<<");
+				sprintf(arrows[2], "");
+				sprintf(arrows[3], "");
+				sprintf(arrows[4], "");
+				sprintf(arrows[5], "");
+				break;
+			case 2:
+				sprintf(arrows[0], "");
+				sprintf(arrows[1], "");
+				sprintf(arrows[2], "<<<");
+				sprintf(arrows[3], "");
+				sprintf(arrows[4], "");
+				sprintf(arrows[5], "");
+				break;
+			case 3:
+				sprintf(arrows[0], "");
+				sprintf(arrows[1], "");
+				sprintf(arrows[2], "");
+				sprintf(arrows[3], "<<<");
+				sprintf(arrows[4], "");
+				sprintf(arrows[5], "");
+				break;
+			case 4:
+				sprintf(arrows[0], "");
+				sprintf(arrows[1], "");
+				sprintf(arrows[2], "");
+				sprintf(arrows[3], "");
+				sprintf(arrows[4], "<<<");
+				sprintf(arrows[5], "");
+				break;
+			case 5:
+				sprintf(arrows[0], "");
+				sprintf(arrows[1], "");
+				sprintf(arrows[2], "");
+				sprintf(arrows[3], "");
+				sprintf(arrows[4], "");
+				sprintf(arrows[5], "<<<");
+				break;
+		}
+		
+		sprintf(settingstext, "\t\t\tSettings\t%s\n\n"
+							  "Jump to page %i\t%s\n\n"
+							  "Return to top on pageturn: %s\t%s"
+							  "\nExit settings menu\t%s"
+							 , arrows[0], pagenumber, arrows[1], onoff, arrows[2], arrows[3]);
+
+		SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
+		text=FNT_Render(settingstext, textcolor);
+		SDL_BlitSurface(text, NULL, screen, NULL);
+		SDL_Flip(screen);
+		
+	while (SDL_PollEvent(&keyevent))   
+	{
+		if(keyevent.type==SDL_KEYDOWN)
+		{
+			switch(keyevent.key.keysym.sym)
+			{
+			case SDLK_UP:
+				if(arrowposition>1)
+					arrowposition--;
+				break;
+			case SDLK_DOWN:
+				if(arrowposition<3)
+					arrowposition++;
+				if(arrowposition==2)
+					if(topreturn)
+						topreturn=0;
+					else
+						topreturn=1;
+				break;
+			case SDLK_LEFT:
+				if(arrowposition==1)
+					if(pagenumber>1)
+						pagenumber--;
+				if(arrowposition==2)
+					if(topreturn)
+						topreturn=0;
+					else
+						topreturn=1;
+				break;
+			case SDLK_RIGHT:
+				if(arrowposition==1)
+					if(pagenumber<app.pagecount)
+						pagenumber++;
+				break;
+			case NUPDF_ZOOMIN:
+				if(arrowposition==1)
+					if(pagenumber<(app.pagecount-10))
+						pagenumber+=10;
+					else
+						pagenumber=app.pagecount;
+					break;
+			case NUPDF_ZOOMOUT:
+				if(arrowposition==1)
+					if(pagenumber>10)
+						pagenumber-=10;
+					else
+						pagenumber=1;
+					break;
+			case NUPDF_FINEPAN:
+				if(arrowposition==1)
+				{
+					done=1;
+					SDL_BlitSurface(loading, NULL, screen, &desthourglass);
+					SDL_Flip(screen);
+					app.pageno=pagenumber;
+					load_page(&app);
+					draw_page(&app);
+				}			
+				if(arrowposition==3)
+					done=1;
+				break;
+			}
+		}
+	}
+		
+		
+	}
 	
 	
+	SDL_FreeSurface(text);
 	
+	save_config();
 	
 }
 	
@@ -480,7 +631,48 @@ int init_config(void)
 	free(confstring);
 	return 0;
 }
+
+int save_config(void)
+{
+	FILE *conf;
+	char *confstring;
+	size_t bytesread;
+	int nbytes=128;
+	confstring = (char *) malloc (nbytes + 1);
+	int done=0;
+	int i=0;
 	
+	conf=fopen("config", "rw");
+	if(conf==NULL)
+	{
+		fprintf(stderr, "cannot find config file, settings can't be saved\n");
+		return 1;
+	}	
+	else
+	{
+		while(!feof(conf))
+		{	
+			bytesread = getline (&confstring, &nbytes, conf);
+
+			confstring[((int)strlen(confstring))-1]='\0';
+			
+			fprintf(stderr, "confstring=%s\n", confstring);
+		
+			if(strcmp(confstring, "TOPRETURN")==0)
+			{
+				
+			}
+		
+		}
+		
+		
+		
+		
+		
+	}
+	
+	
+}	
 void reset_panning(void)
 {
 	int i;

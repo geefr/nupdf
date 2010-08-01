@@ -1,7 +1,7 @@
 CC=mipsel-linux-gcc
 STRIP=mipsel-linux-strip
 CFLAGS=-static  -lz  -ldl -lSDL -lmupdf  -lfitz -lfitzdraw -lcmaps -lfonts -lfreetype -lpthread -lm -ljpeg -lz  -L.
-SOURCES=main.c pdfapp.c
+SOURCES=main.c pdfapp.c font.c spf.c
 
 all: dingoo nanonote
 
