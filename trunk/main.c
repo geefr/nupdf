@@ -612,17 +612,17 @@ int init_config(void)
 		{	
 			bytesread = getline (&confstring, &nbytes, conf);
 
-			confstring[((int)strlen(confstring))-2]='\0';
+			confstring[((int)strlen(confstring))-1]='\0';
 			
-			/*fprintf(stderr, "confstring=%s\n", confstring);*/
+			fprintf(stderr, "confstring(config_init)=%s\n", confstring);
 		
 			if(strcmp(confstring, "TOPRETURN")==0)
 			{
 				bytesread = getline (&confstring, &nbytes, conf);
-				confstring[((int)strlen(confstring))-2]='\0';
+				confstring[((int)strlen(confstring))-1]='\0';
 				if(strcmp(confstring, "1")==0)
 				{
-					/*fprintf(stderr, "topreturn is 1\n");*/
+					fprintf(stderr, "topreturn is 1\n");
 					topreturn=1;
 				}
 				else
@@ -648,8 +648,23 @@ int save_config(void)
 	int done=0;
 	int i=0;
 	
+	
+	system("rm config");
+	
 	conf=fopen("config", "rw");
 	if(conf==NULL)
+	{
+		fprintf(stderr, "cannot create config file\n");
+		return 1;
+	}	
+	
+	
+	if(fprintf(conf, "TOPRETURN\n%i\n", topreturn)<0)
+		fprintf(stderr, "couldn't create config file, oh penis\n");
+	
+	
+	
+	/*if(conf==NULL)
 	{
 		fprintf(stderr, "cannot find config file, settings can't be saved\n");
 		return 1;
@@ -659,7 +674,7 @@ int save_config(void)
 		while(!done)
 		{	
 			bytesread = getline (&confstring, &nbytes, conf);
-			confstring[((int)strlen(confstring))-2]='\0';
+			confstring[((int)strlen(confstring))-1]='\0';
 		
 			fprintf(stderr, "confstring=%s\n", confstring);
 			fprintf(stderr, "strcmp returns %i\n", strcmp(confstring, "TOPRETURN"));
@@ -667,7 +682,11 @@ int save_config(void)
 			if(strcmp(confstring, "TOPRETURN")==0)
 			{
 				fprintf(stderr, "topreturn found, saving value\n");
-				fprintf(conf, "%i", topreturn);
+				if(fprintf(conf, "%i", topreturn)<0)
+					fprintf(stderr, "ohshit, failed to save teh config file\n");
+			
+				if(fputc(topreturn, conf)==EOF)
+					fprintf(stderr, "ohshit config file write failed\n");
 			}
 			done=1;
 				
@@ -675,7 +694,7 @@ int save_config(void)
 	
 	}
 	
-	free(confstring);
+	free(confstring);*/
 	fclose(conf);
 	
 }	
