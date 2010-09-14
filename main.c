@@ -499,9 +499,9 @@ int menu_loop(void)
 		
 		sprintf(settingstext, "\t\t\tSettings\t%s\n\n"
 							  "Jump to page %i\t%s\n\n"
-							  "Return to top on pageturn: %s\t%s"
-							  "\nSave settings and return\t%s"
-							 , arrows[0], pagenumber, arrows[1], onoff, arrows[2], arrows[3]);
+							  "Return to page\t%s"
+							  "\n\n\n\n\n\nUp/Down:select item\nLeft/Right:edit item value\nzoom+/zoom-:+/-10 to item value\n"
+							 , arrows[0], pagenumber, arrows[1], arrows[2]);
 
 		SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
 		text=FNT_Render(settingstext, textcolor);
@@ -519,28 +519,18 @@ int menu_loop(void)
 					arrowposition--;
 				break;
 			case SDLK_DOWN:
-				if(arrowposition<3)
+				if(arrowposition<2)
 					arrowposition++;
 				break;
 			case SDLK_LEFT:
 				if(arrowposition==1)
 					if(pagenumber>1)
 						pagenumber--;
-				if(arrowposition==2)
-					if(topreturn)
-						topreturn=0;
-					else
-						topreturn=1;
 				break;
 			case SDLK_RIGHT:
 				if(arrowposition==1)
 					if(pagenumber<app.pagecount)
 						pagenumber++;
-				if(arrowposition==2)
-					if(topreturn)
-						topreturn=0;
-					else
-						topreturn=1;
 				break;
 			case SDLK_ESCAPE:
 			case SDLK_RETURN:
@@ -571,7 +561,7 @@ int menu_loop(void)
 					load_page(&app);
 					draw_page(&app);
 				}			
-				if(arrowposition==3)
+				if(arrowposition==2)
 					done=1;
 				break;
 			}
@@ -584,8 +574,9 @@ int menu_loop(void)
 	
 	SDL_FreeSurface(text);
 	
-	save_config();
 	
+	/*  TODO: not working
+	 *  save_config(); */	
 }
 	
 int init_config(void)
@@ -640,6 +631,7 @@ int init_config(void)
 
 int save_config(void)
 {
+	/* TODO: this doesn't work, so isn't being used anymore */
 	FILE *conf;
 	char *confstring;
 	size_t bytesread;
@@ -649,22 +641,14 @@ int save_config(void)
 	int i=0;
 	
 	
-	system("rm config");
-	
-	conf=fopen("config", "rw");
+
+	conf=fopen("./config", "rw");
 	if(conf==NULL)
 	{
-		fprintf(stderr, "cannot create config file\n");
+		fprintf(stderr, "cannot open config file\n");
 		return 1;
 	}	
-	
-	
-	if(fprintf(conf, "TOPRETURN\n%i\n", topreturn)<0)
-		fprintf(stderr, "couldn't create config file, oh penis\n");
-	
-	
-	
-	/*if(conf==NULL)
+	if(conf==NULL)
 	{
 		fprintf(stderr, "cannot find config file, settings can't be saved\n");
 		return 1;
@@ -681,9 +665,14 @@ int save_config(void)
 		
 			if(strcmp(confstring, "TOPRETURN")==0)
 			{
+				char writestring[5];
+				sprintf(writestring, "%i", topreturn);
 				fprintf(stderr, "topreturn found, saving value\n");
-				if(fprintf(conf, "%i", topreturn)<0)
+				/*if(fputs(writestring, conf)==EOF)
 					fprintf(stderr, "ohshit, failed to save teh config file\n");
+				
+				if(fprintf(conf, "%i", topreturn)<0)
+					fprintf(stderr, "ohshit, failed to save teh config file\n");*/
 			
 				if(fputc(topreturn, conf)==EOF)
 					fprintf(stderr, "ohshit config file write failed\n");
@@ -694,7 +683,7 @@ int save_config(void)
 	
 	}
 	
-	free(confstring);*/
+	free(confstring);
 	fclose(conf);
 	
 }	
