@@ -152,6 +152,7 @@ int main(int argc, char** argv)
 	SDL_FreeSurface(image);
 	
 	SDL_Quit();
+	return 0;
 }
 	
 int main_loop(void)
@@ -445,67 +446,28 @@ int menu_loop(void)
 		else
 			sprintf(onoff, "OFF");
 		
-		switch(arrowposition)
-		{
-			case 0:
-				sprintf(arrows[0], "<<<");
-				sprintf(arrows[1], "");
-				sprintf(arrows[2], "");
-				sprintf(arrows[3], "");
-				sprintf(arrows[4], "");
-				sprintf(arrows[5], "");
-				break;
-			case 1:
-				sprintf(arrows[0], "");
-				sprintf(arrows[1], "<<<");
-				sprintf(arrows[2], "");
-				sprintf(arrows[3], "");
-				sprintf(arrows[4], "");
-				sprintf(arrows[5], "");
-				break;
-			case 2:
-				sprintf(arrows[0], "");
-				sprintf(arrows[1], "");
-				sprintf(arrows[2], "<<<");
-				sprintf(arrows[3], "");
-				sprintf(arrows[4], "");
-				sprintf(arrows[5], "");
-				break;
-			case 3:
-				sprintf(arrows[0], "");
-				sprintf(arrows[1], "");
-				sprintf(arrows[2], "");
-				sprintf(arrows[3], "<<<");
-				sprintf(arrows[4], "");
-				sprintf(arrows[5], "");
-				break;
-			case 4:
-				sprintf(arrows[0], "");
-				sprintf(arrows[1], "");
-				sprintf(arrows[2], "");
-				sprintf(arrows[3], "");
-				sprintf(arrows[4], "<<<");
-				sprintf(arrows[5], "");
-				break;
-			case 5:
-				sprintf(arrows[0], "");
-				sprintf(arrows[1], "");
-				sprintf(arrows[2], "");
-				sprintf(arrows[3], "");
-				sprintf(arrows[4], "");
-				sprintf(arrows[5], "<<<");
-				break;
-		}
+		     for (i = 0; i < 5; ++i)
+            {
+                if(i==arrowposition) 
+                {
+                    strcpy(arrows[i], "<<<");
+                }
+                else
+                {
+                    strcpy(arrows[i], "");
+                }
+
 		
 		sprintf(settingstext, "\t\t\tSettings\t%s\n\n"
 							  "Jump to page %i\t%s\n\n"
-							  "Return to page\t%s"
+							  "Return\t%s"
 							  "\n\n\n\n\n\nUp/Down:select item\nLeft/Right:edit item value\nzoom+/zoom-:+/-10 to item value\n"
 							 , arrows[0], pagenumber, arrows[1], arrows[2]);
 
 		SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0, 0, 0, 0));
 		text=FNT_Render(settingstext, textcolor);
 		SDL_BlitSurface(text, NULL, screen, NULL);
+		SDL_FreeSurface(text);
 		SDL_Flip(screen);
 		
 	while (SDL_PollEvent(&keyevent))   
