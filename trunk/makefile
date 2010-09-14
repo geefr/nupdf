@@ -16,10 +16,10 @@ nanonote:
 debug: debug_dingoo debug_nanonote
 
 debug_dingoo:
-	$(CC) $(SOURCES) $(CFLAGS) -DDINGOO_BUILD -g -o nupdf.dge
+	$(CC) $(SOURCES) $(CFLAGS) -DDINGOO_BUILD -Wall -g -o nupdf.dge
 
 debug_nanonote:
-	$(CC) $(SOURCES) $(CFLAGS) -g -o nupdf
+	$(CC) $(SOURCES) $(CFLAGS) -Wall -g -o nupdf
 
 clean:
 	rm nupdf nupdf.dge
